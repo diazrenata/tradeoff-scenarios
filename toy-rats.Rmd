@@ -15,42 +15,93 @@ library(ggplot2)
 all_rats <- summarize_individual_rodents(clean = TRUE)
 
 rats <- all_rats %>%
-  filter(plot %in% c(5, 22), !is.na(wgt), period > 100) %>%
+  filter(treatment == "spectabs", !is.na(wgt)) %>%
   mutate(er = 5.69 * (wgt ^ .75)) %>%
-  select(year, plot, species, wgt, er) %>%
-  group_by(year, plot) %>%
+  select(year, species, wgt, er) %>%
+  group_by(year) %>%
   summarize(abund = dplyr::n(),
             totale = sum(er),
             avge = totale/abund) %>%
   ungroup() %>%
-  tidyr::gather(-plot, -year, key = "variable", value = "val")
+  tidyr::gather(-year, key = "variable", value = "val")
 
 ggplot(data = rats, aes(x = year, y = val)) +
   geom_line() +
   theme_bw() +
-  facet_wrap(vars(plot, variable), scales = "free_y") +
+  facet_wrap(vars(variable), scales = "free_y") +
   geom_smooth(method = "lm", se = F, color = "green")
 
 ```
 
-```{r spectra, fig.dim = c(25, 25)}
+```{r spectra, fig.dim = c(12,12)}
 ar_spectra <- all_rats %>%
-  filter(!is.na(wgt), plot %in% c(5,22), period > 100) %>%
+  filter(!is.na(wgt), treatment == "spectabs") %>%
   mutate(er = 5.69 * (wgt ^ .75)) %>%
-  select(year, plot, er, wgt) %>%
-  group_by(year, plot) %>%
+  select(year, er, wgt) %>%
+  group_by(year) %>%
   mutate(er_wgt = er / sum(er)) %>%
   ungroup()
-ggplot(data = filter(ar_spectra, plot == 5), aes(x = wgt)) +
+ggplot(data = ar_spectra, aes(x = wgt)) +
   geom_density() +
   geom_density(aes(x = wgt, weight =er_wgt), color = "purple") +
   facet_wrap(vars(year)) +
   theme_bw()
-ggplot(data = filter(ar_spectra, plot == 22), aes(x = wgt)) +
-  geom_density() +
-  geom_density(aes(x = wgt, weight =er_wgt), color = "purple") +
-  facet_wrap(vars(year)) +
-  theme_bw()
+
+```
+
+```{r species, fig.dim= c(12,12)}
+ar_species <- all_rats %>%
+  filter(!is.na(wgt), treatment == "spectabs") %>%
+  select(year, wgt, species) %>%
+  mutate(species = as.character(species)) %>%
+  group_by(species) %>%
+  mutate(mean_wgt = mean(wgt)) %>%
+  group_by(year, species, mean_wgt) %>%
+  summarize(abund = dplyr::n()) %>%
+  ungroup() %>%
+  group_by(year) %>%
+  mutate(prop_abund = abund / sum(abund)) %>%
+  ungroup()
+
+spp_levels <- ar_species %>%
+  select(species, mean_wgt) %>%
+  distinct() %>%
+  arrange(mean_wgt)
+
+ar_species <- ar_species %>%
+  mutate(species = factor(species, levels = spp_levels$species))
+
+ggplot(data = ar_species, aes(x = species, y = prop_abund)) +
+  geom_col() +
+  theme_bw() +
+  facet_wrap(vars(year), nrow = 7)
+```
+
+```{r turnover}
+
+ar_mat <- ar_species %>%
+  select(year, species, abund) %>%
+  tidyr::pivot_wider(names_from = species, values_from = abund, values_fill = list(abund = 0))
+
+ar_years <- ar_mat$year
+
+ar_mat <- select(ar_mat, -year)
+
+dist_mat <- dist(ar_mat)
+
+dist_from_start <- data.frame(
+  year = ar_years,
+  val = c(0, dist_mat[1:25]),
+  variable = as.character("dist_from_start")
+)
+
+rats <- bind_rows(rats, dist_from_start)
+
+ggplot(data = rats, aes(x = year, y = val)) +
+  geom_line() +
+  theme_bw() +
+  facet_wrap(vars(variable), scales = "free_y") +
+  geom_smooth(method = "lm", se = F, color = "green")
 
 ```
 
