@@ -15,7 +15,9 @@ rats <- all_rats %>%
   group_by(year) %>%
   summarize(abund = dplyr::n(),
             totale = sum(er),
-            avge = totale/abund) %>%
+            avge = totale/abund,
+            richness = length(unique(species)),
+            avgwgt = mean(wgt)) %>%
   ungroup() %>%
   tidyr::gather(-year, key = "variable", value = "val")
 
@@ -27,6 +29,33 @@ ggplot(data = rats, aes(x = year, y = val)) +
 ```
 
 ![](toy-rats_files/figure-markdown_github/get%20some%20rats-1.png)
+
+``` r
+lm_results <- lapply(as.list(unique(rats$variable)), FUN = function(var_name, rat_data) return(lm(val ~ year, data = filter(rat_data, variable == var_name))), rat_data = rats)
+
+names(lm_results) <- unique(rats$variable)
+
+for(i in 1:length(lm_results)) {
+  print(names(lm_results)[i])
+  print(lm_results[[i]]$coefficients[2])
+}
+```
+
+    ## [1] "abund"
+    ##     year 
+    ## 4.341538 
+    ## [1] "totale"
+    ##     year 
+    ## 204.1938 
+    ## [1] "avge"
+    ##      year 
+    ## -1.162985 
+    ## [1] "richness"
+    ##       year 
+    ## 0.04752137 
+    ## [1] "avgwgt"
+    ##       year 
+    ## -0.7734788
 
 ``` r
 ar_spectra <- all_rats %>%
@@ -92,17 +121,10 @@ dist_from_start <- data.frame(
   variable = as.character("dist_from_start")
 )
 
-rats <- bind_rows(rats, dist_from_start)
-```
 
-    ## Warning in bind_rows_(x, .id): binding character and factor vector, coercing
-    ## into character vector
-
-``` r
-ggplot(data = rats, aes(x = year, y = val)) +
+ggplot(data = dist_from_start, aes(x = year, y = val)) +
   geom_line() +
   theme_bw() +
-  facet_wrap(vars(variable), scales = "free_y") +
   geom_smooth(method = "lm", se = F, color = "green")
 ```
 
