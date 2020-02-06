@@ -1,0 +1,100 @@
+---
+title: "Toy rodent scenarios"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(portalr)
+library(dplyr)
+library(ggplot2)
+```
+
+```{r two species toy community}
+
+abund1 <- round(rnorm(n = 50, mean = 75, sd = 4))
+
+abund2 <- round(rnorm(n = 50, mean = 75, sd = 4))
+
+sizes1 <- apply(as.matrix(abund1), MARGIN = 1, FUN = function(abund_value) return(data.frame(sp = "sp1", wgt = rnorm(n = abund_value, mean = 45, sd = 6), stringsAsFactors =  F)))
+
+names(sizes1) <- 1:length(sizes1)
+
+sizes2 <- apply(as.matrix(abund2), MARGIN = 1, FUN = function(abund_value) return(data.frame(sp = "sp2", wgt = rnorm(n = abund_value, mean = 20, sd = 3), stringsAsFactors =  F)))
+
+names(sizes2) <- 1:length(sizes2)
+
+sizes1 <- bind_rows(sizes1, .id = "timestep")
+sizes2 <- bind_rows(sizes2, .id = "timestep")
+
+community_ts <- bind_rows(sizes1, sizes2)
+
+
+community_ts <- community_ts %>%
+  mutate(er = 5.69 * (wgt ^ .75),
+         timestep = as.numeric(timestep))
+
+community_properties <- community_ts %>%
+  group_by(timestep) %>%
+  summarize(abund = dplyr::n(),
+            totale = sum(er)) %>%
+  ungroup() %>%
+  mutate(avge = totale/abund)
+
+```
+
+### Static in all properties...
+
+```{r static toy}
+
+community_properties_long <- tidyr::gather(community_properties, -timestep, key = "variable", value = "value")
+
+static_plot <- ggplot(data = community_properties_long, aes(x = timestep, y = value)) +
+  geom_line() +
+  theme_bw() +
+  facet_wrap(vars(variable), scales = "free_y")
+
+
+static_plot
+
+```
+
+```{r fxns for simulating communities}
+
+sim_abund <- function(ntimesteps, coeff, err, start) {
+  
+  abund_df <- data.frame(
+    timestep = 1:ntimesteps,
+    abund = round((coeff * 1:ntimesteps) + runif(ntimesteps, -1 * err, err) + start)
+  )
+  
+  return(abund_df)
+  
+  
+}
+
+abund3 <- sim_abund(50, -1, 3, 100)
+abund4 <- sim_abund(50, 1.75, 3, 100)
+
+commmunity_ts2 <- left_join(abund3, abund4, by = "timestep")
+
+community_properties2 <- commmunity_ts2 %>%
+  group_by(timestep) %>%
+  mutate(e.x = sum(5.69 * (rnorm(n = abund.x, mean = 45, sd = 4.5) ^ .75)),
+         e.y = sum(5.69 * (rnorm(n = abund.y, mean = 20, sd = 2) ^ .75)),
+         abund = sum(abund.x, abund.y),
+         totaler = sum(e.x, e.y)) %>%
+  ungroup() %>%
+  select(timestep, abund, totaler) %>%
+  mutate(avge = totaler/abund)
+
+community_properties_long2 <- tidyr::gather(community_properties2, -timestep, key = "variable", value = "value")
+
+plot2 <- ggplot(data = community_properties_long2, aes(x = timestep, y = value)) +
+  geom_line() +
+  theme_bw() +
+  facet_wrap(vars(variable), scales = "free_y")
+
+
+plot2
+```
