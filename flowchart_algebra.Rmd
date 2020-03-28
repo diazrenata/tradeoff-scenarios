@@ -1,0 +1,38 @@
+---
+title: "Flowchart algebra"
+output: 
+  word_document:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(visNetwork)
+library(dplyr)
+```
+
+
+# Equation setup
+
+## Variable defs
+
+* $t$: time. At the moment I'm just using $t = 1$ and $t = 2$ in a before-and-after setup, but I think you should be able to extend this to time *series*.
+* $E_1$, $E_2$: Total energy at $t = 1$, $t = 2$
+* $N_1$, $N_2$: Total number of individuals at $t = 1$, $t = 2$
+* $e_1, e_2$: Average energy at $t = 1$, $t = 2$; $\frac{E_1}{N_1}, \frac{E_2}{N_2}$
+* $\Delta E$: Change in total energy as the ratio $\frac{E_2}{E_1}$
+* $\Delta N$: Change in total individuals as $\frac{N_2}{N_1}$
+* $\Delta e$: Change in average energy as $\frac{e_2}{e_1}$. 
+    * $\frac{e_2}{e_1} = \frac{\frac{E_2}{N_2}}{\frac{E_1}{N_1}} = \frac{E_2}{N_2} * \frac{N_1}{E_1} = \frac{E_2 N_1}{E_1 N_2} = \Delta E * \frac{1}{\Delta N} = \frac{\Delta E}{\Delta N}$
+    * Tells us how the size spectrum is shifting.
+    
+## What we track
+
+* $\Delta E$: $<, >, = 1$
+* $\Delta N$: $>, <, = 1$
+* $\Delta e$: $>, <, = 1$
+
+# Outcomes
+
+```{r outcomes}
+
