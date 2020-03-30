@@ -67,10 +67,12 @@ sv_ratios <- function(scenario) {
     ungroup()
   
   data.frame(
-    variable = c("E ratio", "N ratio"),
+    variable = c("E ratio", "N ratio", "M ratio", "e"),
     ratio = c(
       ratios$E[2]/ratios$E[1],
-      ratios$N[2]/ratios$N[1]
+      ratios$N[2]/ratios$N[1],
+      ratios$M[2]/ratios$M[1],
+      (ratios$E[2]/ratios$E[1]) / (ratios$N[2]/ratios$N[1])
     )
   )
   
@@ -507,4 +509,53 @@ plot_spectra(scenario)
 plot_sv(scenario)
 sv_ratios(scenario)
 
+```
+
+```{r reallocate to the mean}
+
+
+N1 = ceiling(((E/2)/E1))
+N2 = ceiling(((E/2)/E2))
+
+
+scenario <-  bind_rows(individuals_t1, data.frame(
+  species = c(rep(1, times = N1),
+              rep(2, times = N2)),
+  energy = c(rep(E1, times = N1),
+             rep(E2, times = N2)),
+  mass =c(rep(M1, times = N1),
+          rep(M2, times = N2)),
+  ts = 2
+))
+
+
+mean_e = mean(scenario$energy)
+
+sum_e = sum(scenario$energy)
+
+N1 = N/2
+N2 = N/2
+
+E1 = mean_e
+E2 = mean_e
+
+M1 = mean_e ^ (1/.75)
+M2 = mean_e ^ (1/.75)
+
+
+scenario <-  bind_rows(individuals_t1, data.frame(
+  species = c(rep(1, times = N1),
+              rep(2, times = N2)),
+  energy = c(rep(E1, times = N1),
+             rep(E2, times = N2)),
+  mass =c(rep(M1, times = N1),
+          rep(M2, times = N2)),
+  ts = 2
+))
+
+
+
+plot_spectra(scenario)
+plot_sv(scenario)
+sv_ratios(scenario)
 ```

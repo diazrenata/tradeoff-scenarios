@@ -57,6 +57,8 @@ The size spectrum becomes more large-skewed than it was, but note that *beginnin
     ##   variable     ratio
     ## 1  E ratio 1.0007447
     ## 2  N ratio 0.8055556
+    ## 3  M ratio 1.0689655
+    ## 4        e 1.2423037
 
 E is stable, N increases
 ------------------------
@@ -72,6 +74,8 @@ The size spectrum in individuals becomes more concentrated at small sizes, and t
     ##   variable     ratio
     ## 1  E ratio 0.9992553
     ## 2  N ratio 1.1944444
+    ## 3  M ratio 0.9310345
+    ## 4        e 0.8365859
 
 E increases
 ===========
@@ -86,6 +90,8 @@ Here we have increased E by 1.5 by amplifying the original community without cha
     ##   variable ratio
     ## 1  E ratio   1.5
     ## 2  N ratio   1.5
+    ## 3  M ratio   1.5
+    ## 4        e   1.0
 
 E increases, N increases but not as much as E
 ---------------------------------------------
@@ -97,6 +103,8 @@ Gains went to large species more than to small species.
     ##   variable    ratio
     ## 1  E ratio 1.479203
     ## 2  N ratio 1.370370
+    ## 3  M ratio 1.517241
+    ## 4        e 1.079418
 
 E increases, N increases more than E
 ------------------------------------
@@ -107,9 +115,11 @@ Gains go disproportionately to small species.
 
 ![](flowchart_companion_files/figure-markdown_github/E%20increase%20for%20small-1.png)![](flowchart_companion_files/figure-markdown_github/E%20increase%20for%20small-2.png)
 
-    ##   variable    ratio
-    ## 1  E ratio 1.199702
-    ## 2  N ratio 1.277778
+    ##   variable     ratio
+    ## 1  E ratio 1.1997021
+    ## 2  N ratio 1.2777778
+    ## 3  M ratio 1.1724138
+    ## 4        e 0.9388973
 
 ### E increase available to all sizes
 
@@ -118,6 +128,8 @@ Gains go disproportionately to small species.
     ##   variable ratio
     ## 1  E ratio     2
     ## 2  N ratio     2
+    ## 3  M ratio     2
+    ## 4        e     1
 
 E increases, N does not change
 ------------------------------
@@ -133,6 +145,8 @@ Average energy use and size increase.
     ##   variable    ratio
     ## 1  E ratio 1.484558
     ## 2  N ratio 1.004630
+    ## 3  M ratio 1.652299
+    ## 4        e 1.477717
 
 E increases, N decreases
 ------------------------
@@ -144,6 +158,8 @@ Small species decline, and large species increase. The greater the size differen
     ##   variable     ratio
     ## 1  E ratio 1.2055948
     ## 2  N ratio 0.9305556
+    ## 3  M ratio 1.3017241
+    ## 4        e 1.2955645
 
 E decreases
 ===========
@@ -158,6 +174,8 @@ Resources decrease for all sizes, turning-down-the-volume on the whole community
     ##   variable     ratio
     ## 1  E ratio 0.7554577
     ## 2  N ratio 0.7546296
+    ## 3  M ratio 0.7557471
+    ## 4        e 1.0010973
 
 E decreases and N decreases more than E
 ---------------------------------------
@@ -169,6 +187,8 @@ Small species decline. Large species can increase (to a limit) or decline, but l
     ##   variable     ratio
     ## 1  E ratio 0.8768504
     ## 2  N ratio 0.8287037
+    ## 3  M ratio 0.8936782
+    ## 4        e 1.0580987
 
 E decreases and N decreases less than E
 ---------------------------------------
@@ -180,6 +200,8 @@ Large species decline disproportionately.
     ##   variable     ratio
     ## 1  E ratio 0.8786074
     ## 2  N ratio 0.9259259
+    ## 3  M ratio 0.8620690
+    ## 4        e 0.9488959
 
 E decreases and N is stable
 ---------------------------
@@ -193,6 +215,8 @@ Average e must decrease.
     ##   variable     ratio
     ## 1  E ratio 0.9351896
     ## 2  N ratio 1.0046296
+    ## 3  M ratio 0.9109195
+    ## 4        e 0.9308800
 
 E decreases and N increases
 ---------------------------
@@ -206,3 +230,13 @@ This can only result in a *decrease* in E to a threshold/with a particular arran
     ##   variable     ratio
     ## 1  E ratio 0.9006238
     ## 2  N ratio 1.1342593
+    ## 3  M ratio 0.8189655
+    ## 4        e 0.7940194
+
+![](flowchart_companion_files/figure-markdown_github/reallocate%20to%20the%20mean-1.png)![](flowchart_companion_files/figure-markdown_github/reallocate%20to%20the%20mean-2.png)
+
+    ##   variable     ratio
+    ## 1  E ratio 1.0000000
+    ## 2  N ratio 1.0000000
+    ## 3  M ratio 0.9637423
+    ## 4        e 1.0000000

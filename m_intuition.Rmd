@@ -1,0 +1,632 @@
+---
+title: "Situations to match the flowchart"
+output: 
+  html_document:
+    toc: true
+---
+
+```{r setup, echo = F}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(ggplot2)
+library(dplyr)
+
+plot_sv <- function(scenario_df) {
+  
+  c_sum <- scenario_df %>%
+    group_by(ts) %>%
+    summarize(N = dplyr::n(),
+              E = sum(energy),
+              M = sum(mass),
+              Ebar = mean(energy),
+              Mbar = mean(mass)
+    ) %>%
+    ungroup() %>%
+    tidyr::pivot_longer(-ts, names_to = "variable", values_to = "value") %>% 
+    mutate(currency = substr(variable, 0, 1))
+  
+  #return(list(
+  ggplot(c_sum, aes(x = ts, y = value, color = currency)) +
+    geom_point() +
+    geom_line() +
+    scale_color_viridis_d(end = .8) +
+    facet_wrap(vars(variable), scales = "free", as.table = F, nrow = 3) +
+    expand_limits(y = 0) +
+    theme_bw() +
+    theme(legend.position = "none")#,
+}
+
+plot_spectra <- function(scenario_df) {
+  
+  gridExtra::grid.arrange(grobs = list(
+    
+    ggplot(scenario_df, aes(x = mass, weights = energy)) +
+      geom_density() +
+      theme_bw() +
+      xlim(0, 1.5 * (max(scenario$mass)))+
+      facet_wrap(vars(ts)) +
+      ggtitle("E spectrum: nb individuals by size weighted by E"),
+    ggplot(scenario_df, aes(x = mass)) +
+      geom_density() +
+      theme_bw() +
+      xlim(0, 1.5 * (max(scenario$mass))) +
+      facet_wrap(vars(ts)) +
+      ggtitle("Size spectrum: nb individuals by size")
+  ),
+  nrow = 2)
+  #))
+}
+
+sv_ratios <- function(scenario) {
+  
+  ratios = scenario %>% 
+    group_by(ts) %>%
+    summarize(E = sum(energy),
+              N = dplyr::n(),
+              M = sum(mass)) %>%
+    ungroup()
+  
+  data.frame(
+    variable = c("E ratio", "N ratio", "M ratio", "avg e change", "avg size change", "size change / e change"),
+    ratio = c(
+      ratios$E[2]/ratios$E[1],
+      ratios$N[2]/ratios$N[1],
+      ratios$M[2]/ratios$M[1],
+      (ratios$E[2]/ratios$E[1]) / (ratios$N[2]/ratios$N[1]),
+      (ratios$M[2] / ratios$N[2]) / (ratios$M[1] / ratios$N[1]),
+      (ratios$M[2]/ratios$M[1]) /   (ratios$E[2]/ratios$E[1])
+    )
+  )
+  
+}
+
+```
+
+# Beginning
+
+Beginning with a community of 1000 energy units divided into two species of fairly different sizes. The two species have *equal shares of the energy*. This means there are *more individuals of the smaller species*.
+
+```{r toy setup, fig.dim = c(4,4)}
+
+E = 1000
+
+M1 = 5
+M2 = 15
+
+E1 = M1 ^ .75
+E2 = M2 ^ .75
+
+N1 = ceiling((E/2)/E1)
+N2 = ceiling((E/2)/E2)
+
+N = N1 + N2
+
+S = 2
+
+individuals_t1 <- data.frame(
+  species = c(rep(1, times = N1),
+              rep(2, times = N2)),
+  energy = c(rep(E1, times = N1),
+             rep(E2, times = N2)),
+  mass =c(rep(M1, times = N1),
+          rep(M2, times = N2)),
+  ts = 1
+)
+
+gridExtra::grid.arrange(grobs = list(
+  
+  ggplot(individuals_t1, aes(x = mass, weights = energy)) +
+    geom_density() +
+    theme_bw() +
+    xlim(0, 1.5 * (max(individuals_t1$mass)))+
+    facet_wrap(vars(ts)) +
+    ggtitle("E spectrum: nb individuals by size weighted by E"),
+  ggplot(individuals_t1, aes(x = mass)) +
+    geom_density() +
+    theme_bw() +
+    xlim(0, 1.5 * (max(individuals_t1$mass))) +
+    facet_wrap(vars(ts)) +
+    ggtitle("Size spectrum: nb individuals by size")),
+  nrow = 2)
+
+```
+
+# E is stable
+
+## Stable E, N decreases
+
+First achieved by increasing the average size and therefore metabolic rate.
+
+The average *m of an individual* increases more than the average *e* of an individual, because $e \propto m ^ .75$.
+
+The *total M* increases, again because of the .75 scaling. 
+
+I *think* but am not confident hat this must always happen with M. If average *e* increases with stable *E*, I think you must be shifting to larger engines on average, meaning you get more biomass and a larger *M*, *m*.
+
+
+```{r E stable N decrease, fig.dim = c(4,4)}
+
+
+N1 = ceiling((.25 * E)/E1)
+N2 = ceiling((.75 * E)/E2)
+
+scenario <-  bind_rows(individuals_t1, data.frame(
+  species = c(rep(1, times = N1),
+              rep(2, times = N2)),
+  energy = c(rep(E1, times = N1),
+             rep(E2, times = N2)),
+  mass =c(rep(M1, times = N1),
+          rep(M2, times = N2)),
+  ts = 2
+))
+
+plot_spectra(scenario)
+plot_sv(scenario)
+sv_ratios(scenario)
+```
+
+What happens if we use the same changes to N and E but drastically change the size structure?
+
+
+```{r E stable N decrease size change, fig.dim = c(4,4)}
+
+
+N1 = ceiling((.25 * E)/E1)
+N2 = ceiling((.75 * E)/E2)
+
+mean_e = E / sum(N1, N2)
+mean_mass = mean_e ^ (1/.75)
+
+scenario <-  bind_rows(individuals_t1, data.frame(
+  species = c(rep(1, times = N1),
+              rep(2, times = N2)),
+  energy =mean_e,
+  mass =mean_mass,
+  ts = 2
+))
+
+plot_spectra(scenario)
+plot_sv(scenario)
+sv_ratios(scenario)
+```
+
+## E is stable, N increases
+
+Achieved by decreasing the average size.
+
+Average metabolic rate decreases.
+
+Average individual size decreases, more than the average metabolic rate.
+
+Total biomass decreases. Generally, if a community is shifting to smaller species, you will lose biomass faster than you lose energy use.
+
+```{r E stable N increase, fig.dim = c(4,4)}
+
+
+N1 = ceiling((.75 * E)/E1)
+N2 = ceiling((.25 * E)/E2)
+
+scenario <-  bind_rows(individuals_t1, data.frame(
+  species = c(rep(1, times = N1),
+              rep(2, times = N2)),
+  energy = c(rep(E1, times = N1),
+             rep(E2, times = N2)),
+  mass =c(rep(M1, times = N1),
+          rep(M2, times = N2)),
+  ts = 2
+))
+
+plot_spectra(scenario)
+plot_sv(scenario)
+sv_ratios(scenario)
+```
+
+# E increases
+
+## E increases and N increases proportionally
+
+Here we have increased E by 1.5 by amplifying the original community without changing the underlying size structure.
+
+```{r E increase, N increase proportional, fig.dim = c(4,4)}
+
+Eamp = E * 1.5
+
+N1 = ceiling((Eamp/2)/E1)
+N2 = ceiling((Eamp/2)/E2)
+
+
+scenario <-  bind_rows(individuals_t1, data.frame(
+  species = c(rep(1, times = N1),
+              rep(2, times = N2)),
+  energy = c(rep(E1, times = N1),
+             rep(E2, times = N2)),
+  mass =c(rep(M1, times = N1),
+          rep(M2, times = N2)),
+  ts = 2
+))
+
+plot_spectra(scenario)
+plot_sv(scenario)
+sv_ratios(scenario)
+```
+
+
+
+```{r E increase, N increase proportional size change, fig.dim = c(4,4)}
+
+Eamp = E * 1.5
+
+N1 = ceiling((Eamp/2)/E1)
+N2 = ceiling((Eamp/2)/E2)
+
+
+scenarioa <-data.frame(
+  species = c(rep(1, times = N1),
+              rep(2, times = N2)),
+  energy = c(rep(E1, times = N1),
+             rep(E2, times = N2)),
+  mass =c(rep(M1, times = N1),
+          rep(M2, times = N2)),
+  ts = 2
+)
+
+mean_e = mean(scenarioa$energy)
+
+mean_mass = mean_e ^ (1/.75)
+
+scenario <- scenarioa  %>%
+  mutate(mass = mean_mass) %>% 
+  mutate(energy = mass ^ .75) %>%
+  bind_rows(individuals_t1)
+
+
+plot_spectra(scenario)
+plot_sv(scenario)
+sv_ratios(scenario)
+
+```
+
+
+I suspect but am not certain that the magnitude of the M ratio change tells you about how polarized or concentrated at the mean the size spectrum is becoming, but not sure yet quite what that means. 
+
+Switching to stable N and E for a more tractable starting point?
+
+<!-- ## E increases, N increases but not as much as E -->
+
+<!-- Gains went to large species more than to small species. -->
+
+<!-- ```{r E increase, N increases less, fig.dim = c(4,4)} -->
+
+
+<!-- N1 = ceiling((E/2)/E1) -->
+<!-- N2 = ceiling((E/2)/E2) -->
+
+<!-- N1 = ceiling(1.2 * N1) -->
+<!-- N2 = ceiling(1.75 * N2) -->
+
+
+<!-- scenario <-  bind_rows(individuals_t1, data.frame( -->
+<!--   species = c(rep(1, times = N1), -->
+<!--               rep(2, times = N2)), -->
+<!--   energy = c(rep(E1, times = N1), -->
+<!--              rep(E2, times = N2)), -->
+<!--   mass =c(rep(M1, times = N1), -->
+<!--           rep(M2, times = N2)), -->
+<!--   ts = 2 -->
+<!-- )) -->
+
+<!-- plot_spectra(scenario) -->
+<!-- plot_sv(scenario) -->
+<!-- sv_ratios(scenario) -->
+
+<!-- ``` -->
+
+<!-- ## E increases, N increases more than E -->
+
+<!-- Gains go disproportionately to small species. -->
+
+<!-- ### Additional energy available only to small species -->
+<!-- ```{r E increase for small, fig.dim = c(4,4)} -->
+
+<!-- N1 = ceiling(((E/2) + (.2 * E))/E1) -->
+<!-- N2 = ceiling((E/2)/E2) -->
+
+
+<!-- scenario <-  bind_rows(individuals_t1, data.frame( -->
+<!--   species = c(rep(1, times = N1), -->
+<!--               rep(2, times = N2)), -->
+<!--   energy = c(rep(E1, times = N1), -->
+<!--              rep(E2, times = N2)), -->
+<!--   mass =c(rep(M1, times = N1), -->
+<!--           rep(M2, times = N2)), -->
+<!--   ts = 2 -->
+<!-- )) -->
+
+<!-- plot_spectra(scenario) -->
+<!-- plot_sv(scenario) -->
+<!-- sv_ratios(scenario) -->
+
+<!-- ``` -->
+
+<!-- ### E increase available to all sizes -->
+
+<!-- ```{r E increase for all, fig.dim = c(4,4)} -->
+
+
+<!-- N1 = ceiling((E/2 + 500)/E1) -->
+<!-- N2 = ceiling((E/2 + 500)/E2) -->
+
+
+<!-- scenario <-  bind_rows(individuals_t1, data.frame( -->
+<!--   species = c(rep(1, times = N1), -->
+<!--               rep(2, times = N2)), -->
+<!--   energy = c(rep(E1, times = N1), -->
+<!--              rep(E2, times = N2)), -->
+<!--   mass =c(rep(M1, times = N1), -->
+<!--           rep(M2, times = N2)), -->
+<!--   ts = 2 -->
+<!-- )) -->
+
+<!-- plot_spectra(scenario) -->
+<!-- plot_sv(scenario) -->
+<!-- sv_ratios(scenario) -->
+
+<!-- ``` -->
+
+<!-- ## E increases, N does not change -->
+<!-- Achieved by reallocating small individuals to large individuals. -->
+
+<!-- The spectra shift large. -->
+
+<!-- Average energy use and size increase. -->
+
+<!-- ```{r E increase, N stable, fig.dim = c(4,4)} -->
+
+
+<!-- N1 = ceiling((E/2)/E1) -->
+<!-- N2 = ceiling((E/2)/E2) -->
+
+<!-- N2 = N2 + ceiling(.75 * N1) -->
+<!-- N1 = ceiling(.25 * N1) -->
+
+
+<!-- scenario <-  bind_rows(individuals_t1, data.frame( -->
+<!--   species = c(rep(1, times = N1), -->
+<!--               rep(2, times = N2)), -->
+<!--   energy = c(rep(E1, times = N1), -->
+<!--              rep(E2, times = N2)), -->
+<!--   mass =c(rep(M1, times = N1), -->
+<!--           rep(M2, times = N2)), -->
+<!--   ts = 2 -->
+<!-- )) -->
+
+<!-- plot_spectra(scenario) -->
+<!-- plot_sv(scenario) -->
+<!-- sv_ratios(scenario) -->
+
+<!-- ``` -->
+
+<!-- ## E increases, N decreases -->
+
+<!-- Small species decline, and large species increase. The greater the size difference the easier it is to get this pattern; if they're too close it might actually be impossible to get it very convincingly, because E scales at .75.  -->
+
+
+<!-- ```{r E increase, N decreases, fig.dim = c(4,4)} -->
+
+
+<!-- N1 = ceiling((E/2)/E1) -->
+<!-- N2 = ceiling((E/2)/E2) -->
+
+<!-- N2 = N2 + ceiling(.4 * N1) -->
+<!-- N1 = ceiling(.5 * N1) -->
+
+<!-- scenario <-  bind_rows(individuals_t1, data.frame( -->
+<!--   species = c(rep(1, times = N1), -->
+<!--               rep(2, times = N2)), -->
+<!--   energy = c(rep(E1, times = N1), -->
+<!--              rep(E2, times = N2)), -->
+<!--   mass =c(rep(M1, times = N1), -->
+<!--           rep(M2, times = N2)), -->
+<!--   ts = 2 -->
+<!-- )) -->
+
+<!-- plot_spectra(scenario) -->
+<!-- plot_sv(scenario) -->
+<!-- sv_ratios(scenario) -->
+
+<!-- ``` -->
+
+
+<!-- # E decreases -->
+
+<!-- ## E decreases and N increases proportionally -->
+
+<!-- Resources decrease for all sizes, turning-down-the-volume on the whole community without changing the size structure. -->
+
+<!-- ```{r E decreases, N proportionally, fig.dim = c(4,4)} -->
+
+<!-- Edamp = .75 * E -->
+
+<!-- N1 = ceiling((Edamp/2)/E1) -->
+<!-- N2 = ceiling((Edamp/2)/E2) -->
+
+<!-- scenario <-  bind_rows(individuals_t1, data.frame( -->
+<!--   species = c(rep(1, times = N1), -->
+<!--               rep(2, times = N2)), -->
+<!--   energy = c(rep(E1, times = N1), -->
+<!--              rep(E2, times = N2)), -->
+<!--   mass =c(rep(M1, times = N1), -->
+<!--           rep(M2, times = N2)), -->
+<!--   ts = 2 -->
+<!-- )) -->
+
+<!-- plot_spectra(scenario) -->
+<!-- plot_sv(scenario) -->
+<!-- sv_ratios(scenario) -->
+
+<!-- ``` -->
+
+<!-- ## E decreases and N decreases more than E -->
+
+<!-- Small species decline. Large species can increase (to a limit) or decline, but loss of energy to large species must be less than to small species.  -->
+
+<!-- ```{r E decreases, N decreases more, fig.dim = c(4,4)} -->
+
+
+<!-- N1 = ceiling(.75 * ((E/2)/E1)) -->
+<!-- N2 = ceiling((E/2) / E2) -->
+
+<!-- scenario <-  bind_rows(individuals_t1, data.frame( -->
+<!--   species = c(rep(1, times = N1), -->
+<!--               rep(2, times = N2)), -->
+<!--   energy = c(rep(E1, times = N1), -->
+<!--              rep(E2, times = N2)), -->
+<!--   mass =c(rep(M1, times = N1), -->
+<!--           rep(M2, times = N2)), -->
+<!--   ts = 2 -->
+<!-- )) -->
+
+<!-- plot_spectra(scenario) -->
+<!-- plot_sv(scenario) -->
+<!-- sv_ratios(scenario) -->
+
+<!-- ``` -->
+
+<!-- ## E decreases and N decreases less than E -->
+
+<!-- Large species decline disproportionately. -->
+
+<!-- ```{r E decreases, N decreases less, fig.dim = c(4,4)} -->
+
+
+<!-- N1 = ceiling(((E/2)/E1)) -->
+<!-- N2 = ceiling(.75 * ((E/2)/E2)) -->
+
+<!-- scenario <-  bind_rows(individuals_t1, data.frame( -->
+<!--   species = c(rep(1, times = N1), -->
+<!--               rep(2, times = N2)), -->
+<!--   energy = c(rep(E1, times = N1), -->
+<!--              rep(E2, times = N2)), -->
+<!--   mass =c(rep(M1, times = N1), -->
+<!--           rep(M2, times = N2)), -->
+<!--   ts = 2 -->
+<!-- )) -->
+
+<!-- plot_spectra(scenario) -->
+<!-- plot_sv(scenario) -->
+<!-- sv_ratios(scenario) -->
+
+<!-- ``` -->
+
+<!-- ## E decreases and N is stable -->
+
+<!-- Large species decline disproportionately. -->
+
+<!-- Average e must decrease.  -->
+
+<!-- ```{r E decreases, N stable, fig.dim = c(4,4)} -->
+
+
+<!-- N1 = ceiling(((E/2)/E1)) -->
+<!-- N2 = ceiling(((E/2)/E2)) -->
+
+<!-- N1 = N1 + ceiling(.25 * N2) -->
+<!-- N2 = ceiling(.75 * N2) -->
+
+<!-- scenario <-  bind_rows(individuals_t1, data.frame( -->
+<!--   species = c(rep(1, times = N1), -->
+<!--               rep(2, times = N2)), -->
+<!--   energy = c(rep(E1, times = N1), -->
+<!--              rep(E2, times = N2)), -->
+<!--   mass =c(rep(M1, times = N1), -->
+<!--           rep(M2, times = N2)), -->
+<!--   ts = 2 -->
+<!-- )) -->
+
+<!-- plot_spectra(scenario) -->
+<!-- plot_sv(scenario) -->
+<!-- sv_ratios(scenario) -->
+
+<!-- ``` -->
+
+
+<!-- ## E decreases and N increases -->
+
+<!-- Large species *must decline* and small species *must gain*. -->
+
+<!-- This can only result in a *decrease* in E to a threshold/with a particular arrangement of relative sizes and the increase.  -->
+
+
+<!-- ```{r E decreases, N increases, fig.dim = c(4,4)} -->
+
+
+<!-- N1 = ceiling(((E/2)/E1)) -->
+<!-- N2 = ceiling(((E/2)/E2)) -->
+
+<!-- N1 = ceiling(N1 * 1.5) -->
+<!-- N2 = ceiling(.3 * N2) -->
+
+<!-- scenario <-  bind_rows(individuals_t1, data.frame( -->
+<!--   species = c(rep(1, times = N1), -->
+<!--               rep(2, times = N2)), -->
+<!--   energy = c(rep(E1, times = N1), -->
+<!--              rep(E2, times = N2)), -->
+<!--   mass =c(rep(M1, times = N1), -->
+<!--           rep(M2, times = N2)), -->
+<!--   ts = 2 -->
+<!-- )) -->
+
+<!-- plot_spectra(scenario) -->
+<!-- plot_sv(scenario) -->
+<!-- sv_ratios(scenario) -->
+
+<!-- ``` -->
+
+<!-- ```{r reallocate to the mean} -->
+
+
+<!-- N1 = ceiling(((E/2)/E1)) -->
+<!-- N2 = ceiling(((E/2)/E2)) -->
+
+
+<!-- scenario <-  bind_rows(individuals_t1, data.frame( -->
+<!--   species = c(rep(1, times = N1), -->
+<!--               rep(2, times = N2)), -->
+<!--   energy = c(rep(E1, times = N1), -->
+<!--              rep(E2, times = N2)), -->
+<!--   mass =c(rep(M1, times = N1), -->
+<!--           rep(M2, times = N2)), -->
+<!--   ts = 2 -->
+<!-- )) -->
+
+
+<!-- mean_e = mean(scenario$energy) -->
+
+<!-- sum_e = sum(scenario$energy) -->
+
+<!-- N1 = N/2 -->
+<!-- N2 = N/2 -->
+
+<!-- E1 = mean_e -->
+<!-- E2 = mean_e -->
+
+<!-- M1 = mean_e ^ (1/.75) -->
+<!-- M2 = mean_e ^ (1/.75) -->
+
+
+<!-- scenario <-  bind_rows(individuals_t1, data.frame( -->
+<!--   species = c(rep(1, times = N1), -->
+<!--               rep(2, times = N2)), -->
+<!--   energy = c(rep(E1, times = N1), -->
+<!--              rep(E2, times = N2)), -->
+<!--   mass =c(rep(M1, times = N1), -->
+<!--           rep(M2, times = N2)), -->
+<!--   ts = 2 -->
+<!-- )) -->
+
+
+
+<!-- plot_spectra(scenario) -->
+<!-- plot_sv(scenario) -->
+<!-- sv_ratios(scenario) -->
+<!-- ``` -->
