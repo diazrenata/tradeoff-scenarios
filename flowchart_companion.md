@@ -54,11 +54,13 @@ The size spectrum becomes more large-skewed than it was, but note that *beginnin
 
 ![](flowchart_companion_files/figure-markdown_github/E%20stable%20N%20decrease-1.png)![](flowchart_companion_files/figure-markdown_github/E%20stable%20N%20decrease-2.png)
 
-    ##   variable     ratio
-    ## 1  E ratio 1.0007447
-    ## 2  N ratio 0.8055556
-    ## 3  M ratio 1.0689655
-    ## 4        e 1.2423037
+    ##                 variable     ratio
+    ## 1                E ratio 1.0007447
+    ## 2                N ratio 0.8055556
+    ## 3                M ratio 1.0689655
+    ## 4           avg e change 1.2423037
+    ## 5        avg size change 1.3269917
+    ## 6 size change / e change 1.0681701
 
 E is stable, N increases
 ------------------------
@@ -71,11 +73,13 @@ The size spectrum in individuals becomes more concentrated at small sizes, and t
 
 ![](flowchart_companion_files/figure-markdown_github/E%20stable%20N%20increase-1.png)![](flowchart_companion_files/figure-markdown_github/E%20stable%20N%20increase-2.png)
 
-    ##   variable     ratio
-    ## 1  E ratio 0.9992553
-    ## 2  N ratio 1.1944444
-    ## 3  M ratio 0.9310345
-    ## 4        e 0.8365859
+    ##                 variable     ratio
+    ## 1                E ratio 0.9992553
+    ## 2                N ratio 1.1944444
+    ## 3                M ratio 0.9310345
+    ## 4           avg e change 0.8365859
+    ## 5        avg size change 0.7794707
+    ## 6 size change / e change 0.9317283
 
 E increases
 ===========
@@ -87,11 +91,13 @@ Here we have increased E by 1.5 by amplifying the original community without cha
 
 ![](flowchart_companion_files/figure-markdown_github/E%20increase,%20N%20increase%20proportional-1.png)![](flowchart_companion_files/figure-markdown_github/E%20increase,%20N%20increase%20proportional-2.png)
 
-    ##   variable ratio
-    ## 1  E ratio   1.5
-    ## 2  N ratio   1.5
-    ## 3  M ratio   1.5
-    ## 4        e   1.0
+    ##                 variable ratio
+    ## 1                E ratio   1.5
+    ## 2                N ratio   1.5
+    ## 3                M ratio   1.5
+    ## 4           avg e change   1.0
+    ## 5        avg size change   1.0
+    ## 6 size change / e change   1.0
 
 E increases, N increases but not as much as E
 ---------------------------------------------
@@ -100,11 +106,13 @@ Gains went to large species more than to small species.
 
 ![](flowchart_companion_files/figure-markdown_github/E%20increase,%20N%20increases%20less-1.png)![](flowchart_companion_files/figure-markdown_github/E%20increase,%20N%20increases%20less-2.png)
 
-    ##   variable    ratio
-    ## 1  E ratio 1.479203
-    ## 2  N ratio 1.370370
-    ## 3  M ratio 1.517241
-    ## 4        e 1.079418
+    ##                 variable    ratio
+    ## 1                E ratio 1.479203
+    ## 2                N ratio 1.370370
+    ## 3                M ratio 1.517241
+    ## 4           avg e change 1.079418
+    ## 5        avg size change 1.107176
+    ## 6 size change / e change 1.025715
 
 E increases, N increases more than E
 ------------------------------------
@@ -115,21 +123,25 @@ Gains go disproportionately to small species.
 
 ![](flowchart_companion_files/figure-markdown_github/E%20increase%20for%20small-1.png)![](flowchart_companion_files/figure-markdown_github/E%20increase%20for%20small-2.png)
 
-    ##   variable     ratio
-    ## 1  E ratio 1.1997021
-    ## 2  N ratio 1.2777778
-    ## 3  M ratio 1.1724138
-    ## 4        e 0.9388973
+    ##                 variable     ratio
+    ## 1                E ratio 1.1997021
+    ## 2                N ratio 1.2777778
+    ## 3                M ratio 1.1724138
+    ## 4           avg e change 0.9388973
+    ## 5        avg size change 0.9175412
+    ## 6 size change / e change 0.9772541
 
 ### E increase available to all sizes
 
 ![](flowchart_companion_files/figure-markdown_github/E%20increase%20for%20all-1.png)![](flowchart_companion_files/figure-markdown_github/E%20increase%20for%20all-2.png)
 
-    ##   variable ratio
-    ## 1  E ratio     2
-    ## 2  N ratio     2
-    ## 3  M ratio     2
-    ## 4        e     1
+    ##                 variable ratio
+    ## 1                E ratio     2
+    ## 2                N ratio     2
+    ## 3                M ratio     2
+    ## 4           avg e change     1
+    ## 5        avg size change     1
+    ## 6 size change / e change     1
 
 E increases, N does not change
 ------------------------------
@@ -142,11 +154,13 @@ Average energy use and size increase.
 
 ![](flowchart_companion_files/figure-markdown_github/E%20increase,%20N%20stable-1.png)![](flowchart_companion_files/figure-markdown_github/E%20increase,%20N%20stable-2.png)
 
-    ##   variable    ratio
-    ## 1  E ratio 1.484558
-    ## 2  N ratio 1.004630
-    ## 3  M ratio 1.652299
-    ## 4        e 1.477717
+    ##                 variable    ratio
+    ## 1                E ratio 1.484558
+    ## 2                N ratio 1.004630
+    ## 3                M ratio 1.652299
+    ## 4           avg e change 1.477717
+    ## 5        avg size change 1.644685
+    ## 6 size change / e change 1.112990
 
 E increases, N decreases
 ------------------------
@@ -155,11 +169,13 @@ Small species decline, and large species increase. The greater the size differen
 
 ![](flowchart_companion_files/figure-markdown_github/E%20increase,%20N%20decreases-1.png)![](flowchart_companion_files/figure-markdown_github/E%20increase,%20N%20decreases-2.png)
 
-    ##   variable     ratio
-    ## 1  E ratio 1.2055948
-    ## 2  N ratio 0.9305556
-    ## 3  M ratio 1.3017241
-    ## 4        e 1.2955645
+    ##                 variable     ratio
+    ## 1                E ratio 1.2055948
+    ## 2                N ratio 0.9305556
+    ## 3                M ratio 1.3017241
+    ## 4           avg e change 1.2955645
+    ## 5        avg size change 1.3988677
+    ## 6 size change / e change 1.0797361
 
 E decreases
 ===========
@@ -171,11 +187,13 @@ Resources decrease for all sizes, turning-down-the-volume on the whole community
 
 ![](flowchart_companion_files/figure-markdown_github/E%20decreases,%20N%20proportionally-1.png)![](flowchart_companion_files/figure-markdown_github/E%20decreases,%20N%20proportionally-2.png)
 
-    ##   variable     ratio
-    ## 1  E ratio 0.7554577
-    ## 2  N ratio 0.7546296
-    ## 3  M ratio 0.7557471
-    ## 4        e 1.0010973
+    ##                 variable     ratio
+    ## 1                E ratio 0.7554577
+    ## 2                N ratio 0.7546296
+    ## 3                M ratio 0.7557471
+    ## 4           avg e change 1.0010973
+    ## 5        avg size change 1.0014809
+    ## 6 size change / e change 1.0003831
 
 E decreases and N decreases more than E
 ---------------------------------------
@@ -184,11 +202,13 @@ Small species decline. Large species can increase (to a limit) or decline, but l
 
 ![](flowchart_companion_files/figure-markdown_github/E%20decreases,%20N%20decreases%20more-1.png)![](flowchart_companion_files/figure-markdown_github/E%20decreases,%20N%20decreases%20more-2.png)
 
-    ##   variable     ratio
-    ## 1  E ratio 0.8768504
-    ## 2  N ratio 0.8287037
-    ## 3  M ratio 0.8936782
-    ## 4        e 1.0580987
+    ##                 variable     ratio
+    ## 1                E ratio 0.8768504
+    ## 2                N ratio 0.8287037
+    ## 3                M ratio 0.8936782
+    ## 4           avg e change 1.0580987
+    ## 5        avg size change 1.0784049
+    ## 6 size change / e change 1.0191912
 
 E decreases and N decreases less than E
 ---------------------------------------
@@ -197,11 +217,13 @@ Large species decline disproportionately.
 
 ![](flowchart_companion_files/figure-markdown_github/E%20decreases,%20N%20decreases%20less-1.png)![](flowchart_companion_files/figure-markdown_github/E%20decreases,%20N%20decreases%20less-2.png)
 
-    ##   variable     ratio
-    ## 1  E ratio 0.8786074
-    ## 2  N ratio 0.9259259
-    ## 3  M ratio 0.8620690
-    ## 4        e 0.9488959
+    ##                 variable     ratio
+    ## 1                E ratio 0.8786074
+    ## 2                N ratio 0.9259259
+    ## 3                M ratio 0.8620690
+    ## 4           avg e change 0.9488959
+    ## 5        avg size change 0.9310345
+    ## 6 size change / e change 0.9811766
 
 E decreases and N is stable
 ---------------------------
@@ -212,11 +234,13 @@ Average e must decrease.
 
 ![](flowchart_companion_files/figure-markdown_github/E%20decreases,%20N%20stable-1.png)![](flowchart_companion_files/figure-markdown_github/E%20decreases,%20N%20stable-2.png)
 
-    ##   variable     ratio
-    ## 1  E ratio 0.9351896
-    ## 2  N ratio 1.0046296
-    ## 3  M ratio 0.9109195
-    ## 4        e 0.9308800
+    ##                 variable     ratio
+    ## 1                E ratio 0.9351896
+    ## 2                N ratio 1.0046296
+    ## 3                M ratio 0.9109195
+    ## 4           avg e change 0.9308800
+    ## 5        avg size change 0.9067218
+    ## 6 size change / e change 0.9740480
 
 E decreases and N increases
 ---------------------------
@@ -227,16 +251,20 @@ This can only result in a *decrease* in E to a threshold/with a particular arran
 
 ![](flowchart_companion_files/figure-markdown_github/E%20decreases,%20N%20increases-1.png)![](flowchart_companion_files/figure-markdown_github/E%20decreases,%20N%20increases-2.png)
 
-    ##   variable     ratio
-    ## 1  E ratio 0.9006238
-    ## 2  N ratio 1.1342593
-    ## 3  M ratio 0.8189655
-    ## 4        e 0.7940194
+    ##                 variable     ratio
+    ## 1                E ratio 0.9006238
+    ## 2                N ratio 1.1342593
+    ## 3                M ratio 0.8189655
+    ## 4           avg e change 0.7940194
+    ## 5        avg size change 0.7220267
+    ## 6 size change / e change 0.9093314
 
 ![](flowchart_companion_files/figure-markdown_github/reallocate%20to%20the%20mean-1.png)![](flowchart_companion_files/figure-markdown_github/reallocate%20to%20the%20mean-2.png)
 
-    ##   variable     ratio
-    ## 1  E ratio 1.0000000
-    ## 2  N ratio 1.0000000
-    ## 3  M ratio 0.9637423
-    ## 4        e 1.0000000
+    ##                 variable     ratio
+    ## 1                E ratio 1.0000000
+    ## 2                N ratio 1.0000000
+    ## 3                M ratio 0.9637423
+    ## 4           avg e change 1.0000000
+    ## 5        avg size change 0.9637423
+    ## 6 size change / e change 0.9637423

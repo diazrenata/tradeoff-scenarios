@@ -67,12 +67,14 @@ sv_ratios <- function(scenario) {
     ungroup()
   
   data.frame(
-    variable = c("E ratio", "N ratio", "M ratio", "e"),
+    variable = c("E ratio", "N ratio", "M ratio", "avg e change", "avg size change", "size change / e change"),
     ratio = c(
       ratios$E[2]/ratios$E[1],
       ratios$N[2]/ratios$N[1],
       ratios$M[2]/ratios$M[1],
-      (ratios$E[2]/ratios$E[1]) / (ratios$N[2]/ratios$N[1])
+      (ratios$E[2]/ratios$E[1]) / (ratios$N[2]/ratios$N[1]),
+      (ratios$M[2] / ratios$N[2]) / (ratios$M[1] / ratios$N[1]),
+      (ratios$M[2]/ratios$M[1]) /   (ratios$E[2]/ratios$E[1])
     )
   )
   
