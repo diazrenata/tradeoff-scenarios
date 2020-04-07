@@ -25,7 +25,9 @@ dat <- dat %>%
   mutate(sv_abund = sum(ind_abund),
          sv_biomass = sum(total_biomass),
          sv_energy = sum(total_energy)) %>%
-  ungroup()
+  ungroup() %>%
+  mutate(sv_meane = sv_energy / sv_abund,
+         sv_meanm = sv_biomass/sv_abund)
 
 dat <- filter(dat, treatment == "control")
 
@@ -62,10 +64,12 @@ ggplot(dat, aes(x = period, y = sv_biomass)) +
 
 ```{r facet svs}
 
-sv_long <- dat %>%
-  select(sv_abund, sv_energy, sv_biomass, period) %>%
-  distinct() %>%
-  tidyr::pivot_longer(cols = c("sv_energy", 'sv_biomass', "sv_abund"), names_to = "var", values_to = "val")
+sv <- dat %>%
+  select(sv_abund, sv_energy, sv_biomass, sv_meane, sv_meanm, period) %>%
+  distinct()
+  
+  sv_long <- sv %>%
+  tidyr::pivot_longer(cols = c("sv_energy", 'sv_biomass', "sv_abund", "sv_meane", "sv_meanm"), names_to = "var", values_to = "val")
 
 ggplot(sv_long, aes(x = period, y = val)) +
   geom_line() +
@@ -76,21 +80,103 @@ ggplot(sv_long, aes(x = period, y = val)) +
 ```
 
 
-```{r adf tests sv}
-
-tseries::adf.test(dat$sv_abund, alternative = "s")
-tseries::adf.test(dat$sv_energy, alternative = "s")
-tseries::adf.test(dat$sv_biomass, alternative = "s")
-
-tseries::kpss.test(dat$sv_abund, null = c("L"))
-tseries::kpss.test(dat$sv_energy, null = c("L"))
-tseries::kpss.test(dat$sv_biomass, null = c("L"))
-
-
-tseries::kpss.test(dat$sv_abund, null = c("T"))
-tseries::kpss.test(dat$sv_energy, null = c("T"))
-tseries::kpss.test(dat$sv_biomass, null = c("T"))
-
+```{r lm sv}
+summary(lm(formula = sv_abund ~ period, data = sv))
+summary(lm(formula = sv_energy ~ period, data = sv))
+summary(lm(formula = sv_biomass ~ period, data = sv))
+summary(lm(formula = sv_meane ~ period, data = sv))
+summary(lm(formula = sv_meanm ~ period, data = sv))
 
 
 ```
+
+
+Using methods from Dornelas et al work on population trajectories: 
+
+```{r sv after dornelas}
+
+sv_d <- sv %>%
+  mutate_at(vars(-period), sqrt) %>%
+  mutate_at(vars(-period), scale)
+
+
+  sv_d_long <- sv_d %>%
+  tidyr::pivot_longer(cols = c("sv_energy", 'sv_biomass', "sv_abund", "sv_meane", "sv_meanm"), names_to = "var", values_to = "val")
+
+ggplot(sv_d_long, aes(x = period, y = val)) +
+  geom_line() +
+  geom_smooth(method = "lm", se = F) +
+  theme_bw() +
+  facet_wrap(vars(var), scales = "free_y", nrow = 1)
+
+
+summary(lm(formula = sv_abund ~ period, data = sv_d))
+summary(lm(formula = sv_energy ~ period, data = sv_d))
+summary(lm(formula = sv_biomass ~ period, data = sv_d))
+summary(lm(formula = sv_meane ~ period, data = sv_d))
+summary(lm(formula = sv_meanm ~ period, data = sv_d))
+```
+
+
+Aggregate slopes:
+
+```{r slopes}
+
+sv_slopes <- bind_rows(raw = sv %>%
+  summarize_at(vars(-period), function(x, period_vector) {return(lm(x ~ period_vector)$coefficients["period_vector"])}, period_vector = sv$period),
+  scaled = sv_d %>%
+  summarize_at(vars(-period), function(x, period_vector) {return(lm(x ~ period_vector)$coefficients["period_vector"])}, period_vector = sv_d$period), .id = "transformed")
+
+sv_slopes
+```
+
+Population slopes:
+
+```{r population slopes}
+source(here::here("portal_decades", "fill_populations.R"))
+source(here::here("portal_decades", "population_slopes.R"))
+
+pops <- fill_populations(dat)
+
+scaled_pops <- pops %>%
+  group_by(species) %>%
+  mutate_at(vars(-treatment, -period, -species), .funs = sqrt) %>%
+    mutate_at(vars(-treatment, -period, -species), .funs = scale) %>%
+  ungroup()
+
+
+pop_slopes <- bind_rows(raw = get_populations_slopes(pops),
+                        scaled = get_populations_slopes(scaled_pops),
+                        .id= "transformed")
+
+print(pop_slopes)
+
+slopes_long <- pop_slopes %>%
+  tidyr::pivot_longer(cols = c("ind_abund", "total_biomass", "total_energy"), names_to = "variable", values_to = "slope")
+
+sv_slope_lines <- sv_slopes %>%
+  select(transformed, sv_abund, sv_energy, sv_biomass) %>%
+  rename(ind_abund = sv_abund, total_energy = sv_energy, total_biomass = sv_biomass) %>%
+  tidyr::pivot_longer(cols = c("ind_abund", "total_biomass", "total_energy"), names_to = "variable", values_to = "sv_slope")
+slopes_long <- left_join(slopes_long, sv_slope_lines,  by = c("transformed", "variable"))
+
+
+ggplot(slopes_long, aes(x = slope)) +
+  geom_histogram() +
+  geom_histogram(aes(x = sv_slope), fill = "blue", alpha = .4) +
+  theme_bw() +
+  facet_wrap(vars(transformed, variable), scales = "free_x", nrow = 2) +
+  geom_vline(xintercept = 0)
+
+```
+
+<!-- ```{r adf tests sv} -->
+
+<!-- tseries::adf.test(sv$sv_abund, alternative = "s") -->
+<!-- tseries::adf.test(sv$sv_energy, alternative = "s") -->
+<!-- tseries::adf.test(sv$sv_biomass, alternative = "s") -->
+
+<!-- tseries::adf.test(sv$sv_meane, alternative = "s") -->
+<!-- tseries::adf.test(sv$sv_meanm, alternative = "s") -->
+
+<!-- ``` -->

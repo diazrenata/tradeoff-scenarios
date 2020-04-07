@@ -17,81 +17,251 @@ Exploratory plots
 
 ![](decade_vis_files/figure-gfm/facet%20svs-1.png)<!-- -->
 
-    ## Registered S3 method overwritten by 'quantmod':
-    ##   method            from
-    ##   as.zoo.data.frame zoo
+    ## 
+    ## Call:
+    ## lm(formula = sv_abund ~ period, data = sv)
+    ## 
+    ## Residuals:
+    ##    Min     1Q Median     3Q    Max 
+    ## -33.16 -15.14  -2.50  15.10  54.14 
+    ## 
+    ## Coefficients:
+    ##             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) 70.81949    5.35828  13.217   <2e-16 ***
+    ## period      -0.14221    0.05862  -2.426   0.0169 *  
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 20.06 on 110 degrees of freedom
+    ## Multiple R-squared:  0.05079,    Adjusted R-squared:  0.04216 
+    ## F-statistic: 5.885 on 1 and 110 DF,  p-value: 0.01689
 
     ## 
-    ##  Augmented Dickey-Fuller Test
+    ## Call:
+    ## lm(formula = sv_energy ~ period, data = sv)
     ## 
-    ## data:  dat$sv_abund
-    ## Dickey-Fuller = -3.0898, Lag order = 8, p-value = 0.117
-    ## alternative hypothesis: stationary
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -4901.4 -1483.9  -239.1  1520.3  5071.3 
+    ## 
+    ## Coefficients:
+    ##             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) 9724.670    581.500  16.723  < 2e-16 ***
+    ## period       -36.489      6.362  -5.736 8.65e-08 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 2177 on 110 degrees of freedom
+    ## Multiple R-squared:  0.2302, Adjusted R-squared:  0.2232 
+    ## F-statistic:  32.9 on 1 and 110 DF,  p-value: 8.647e-08
 
     ## 
-    ##  Augmented Dickey-Fuller Test
+    ## Call:
+    ## lm(formula = sv_biomass ~ period, data = sv)
     ## 
-    ## data:  dat$sv_energy
-    ## Dickey-Fuller = -3.5303, Lag order = 8, p-value = 0.03939
-    ## alternative hypothesis: stationary
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -2665.8  -668.0  -106.5   842.1  2625.4 
+    ## 
+    ## Coefficients:
+    ##             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) 5212.581    296.741  17.566  < 2e-16 ***
+    ## period       -22.284      3.246  -6.864 4.14e-10 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1111 on 110 degrees of freedom
+    ## Multiple R-squared:  0.2999, Adjusted R-squared:  0.2935 
+    ## F-statistic: 47.12 on 1 and 110 DF,  p-value: 4.141e-10
 
     ## 
-    ##  Augmented Dickey-Fuller Test
+    ## Call:
+    ## lm(formula = sv_meane ~ period, data = sv)
     ## 
-    ## data:  dat$sv_biomass
-    ## Dickey-Fuller = -3.7594, Lag order = 8, p-value = 0.02103
-    ## alternative hypothesis: stationary
-
-    ## Warning in tseries::kpss.test(dat$sv_abund, null = c("L")): p-value smaller than
-    ## printed p-value
-
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -26.644  -7.826   1.889   8.118  20.384 
     ## 
-    ##  KPSS Test for Level Stationarity
+    ## Coefficients:
+    ##             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) 147.0377     3.0989   47.45   <2e-16 ***
+    ## period       -0.4056     0.0339  -11.96   <2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## data:  dat$sv_abund
-    ## KPSS Level = 1.3665, Truncation lag parameter = 6, p-value = 0.01
-
-    ## Warning in tseries::kpss.test(dat$sv_energy, null = c("L")): p-value smaller
-    ## than printed p-value
-
-    ## 
-    ##  KPSS Test for Level Stationarity
-    ## 
-    ## data:  dat$sv_energy
-    ## KPSS Level = 3.1075, Truncation lag parameter = 6, p-value = 0.01
-
-    ## Warning in tseries::kpss.test(dat$sv_biomass, null = c("L")): p-value smaller
-    ## than printed p-value
+    ## Residual standard error: 11.6 on 110 degrees of freedom
+    ## Multiple R-squared:  0.5655, Adjusted R-squared:  0.5616 
+    ## F-statistic: 143.2 on 1 and 110 DF,  p-value: < 2.2e-16
 
     ## 
-    ##  KPSS Test for Level Stationarity
+    ## Call:
+    ## lm(formula = sv_meanm ~ period, data = sv)
     ## 
-    ## data:  dat$sv_biomass
-    ## KPSS Level = 3.7219, Truncation lag parameter = 6, p-value = 0.01
-
-    ## Warning in tseries::kpss.test(dat$sv_abund, null = c("T")): p-value smaller than
-    ## printed p-value
-
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -18.6464  -4.2915   0.7547   5.0172  13.8013 
     ## 
-    ##  KPSS Test for Trend Stationarity
+    ## Coefficients:
+    ##             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) 80.27688    2.07266   38.73   <2e-16 ***
+    ## period      -0.28208    0.02267  -12.44   <2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## data:  dat$sv_abund
-    ## KPSS Trend = 0.63687, Truncation lag parameter = 6, p-value = 0.01
+    ## Residual standard error: 7.758 on 110 degrees of freedom
+    ## Multiple R-squared:  0.5845, Adjusted R-squared:  0.5808 
+    ## F-statistic: 154.8 on 1 and 110 DF,  p-value: < 2.2e-16
 
-    ## Warning in tseries::kpss.test(dat$sv_energy, null = c("T")): p-value smaller
-    ## than printed p-value
+Using methods from Dornelas et al work on population trajectories:
 
-    ## 
-    ##  KPSS Test for Trend Stationarity
-    ## 
-    ## data:  dat$sv_energy
-    ## KPSS Trend = 0.55504, Truncation lag parameter = 6, p-value = 0.01
+    ## `geom_smooth()` using formula 'y ~ x'
 
-    ## Warning in tseries::kpss.test(dat$sv_biomass, null = c("T")): p-value smaller
-    ## than printed p-value
+![](decade_vis_files/figure-gfm/sv%20after%20dornelas-1.png)<!-- -->
 
     ## 
-    ##  KPSS Test for Trend Stationarity
+    ## Call:
+    ## lm(formula = sv_abund ~ period, data = sv_d)
     ## 
-    ## data:  dat$sv_biomass
-    ## KPSS Trend = 0.49296, Truncation lag parameter = 6, p-value = 0.01
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -1.8712 -0.7264 -0.0410  0.8008  2.2750 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)  
+    ## (Intercept)  0.608531   0.261102   2.331   0.0216 *
+    ## period      -0.007117   0.002856  -2.492   0.0142 *
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.9773 on 110 degrees of freedom
+    ## Multiple R-squared:  0.05343,    Adjusted R-squared:  0.04482 
+    ## F-statistic: 6.208 on 1 and 110 DF,  p-value: 0.01421
+
+    ## 
+    ## Call:
+    ## lm(formula = sv_energy ~ period, data = sv_d)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -2.14361 -0.65120 -0.03514  0.64248  1.75313 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)  1.293837   0.233725   5.536 2.13e-07 ***
+    ## period      -0.015133   0.002557  -5.918 3.75e-08 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.8749 on 110 degrees of freedom
+    ## Multiple R-squared:  0.2415, Adjusted R-squared:  0.2346 
+    ## F-statistic: 35.03 on 1 and 110 DF,  p-value: 3.754e-08
+
+    ## 
+    ## Call:
+    ## lm(formula = sv_biomass ~ period, data = sv_d)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -2.17073 -0.57083 -0.00921  0.66557  1.67741 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)  1.470882   0.222579   6.608 1.44e-09 ***
+    ## period      -0.017203   0.002435  -7.065 1.54e-10 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.8331 on 110 degrees of freedom
+    ## Multiple R-squared:  0.3121, Adjusted R-squared:  0.3059 
+    ## F-statistic: 49.91 on 1 and 110 DF,  p-value: 1.541e-10
+
+    ## 
+    ## Call:
+    ## lm(formula = sv_meane ~ period, data = sv_d)
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -1.5885 -0.4318  0.1300  0.5017  1.0999 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)  1.976738   0.177257   11.15   <2e-16 ***
+    ## period      -0.023120   0.001939  -11.92   <2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.6635 on 110 degrees of freedom
+    ## Multiple R-squared:  0.5637, Adjusted R-squared:  0.5598 
+    ## F-statistic: 142.1 on 1 and 110 DF,  p-value: < 2.2e-16
+
+    ## 
+    ## Call:
+    ## lm(formula = sv_meanm ~ period, data = sv_d)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -1.66512 -0.38227  0.08445  0.45126  1.08543 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)  2.009541   0.173382   11.59   <2e-16 ***
+    ## period      -0.023503   0.001897  -12.39   <2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.649 on 110 degrees of freedom
+    ## Multiple R-squared:  0.5826, Adjusted R-squared:  0.5788 
+    ## F-statistic: 153.5 on 1 and 110 DF,  p-value: < 2.2e-16
+
+Aggregate slopes:
+
+    ## # A tibble: 2 x 6
+    ##   transformed sv_abund sv_energy sv_biomass sv_meane sv_meanm
+    ##   <chr>          <dbl>     <dbl>      <dbl>    <dbl>    <dbl>
+    ## 1 raw         -0.142    -36.5      -22.3     -0.406   -0.282 
+    ## 2 scaled      -0.00712   -0.0151    -0.0172  -0.0231  -0.0235
+
+Population slopes:
+
+    ## # A tibble: 20 x 6
+    ##    transformed treatment species ind_abund total_biomass total_energy
+    ##    <chr>       <chr>     <chr>       <dbl>         <dbl>        <dbl>
+    ##  1 raw         control   DM       0.0105         0.709       1.45    
+    ##  2 raw         control   DO       0.0338         1.93        4.00    
+    ##  3 raw         control   DS      -0.216        -25.9       -44.4     
+    ##  4 raw         control   PF      -0.0412        -0.289      -1.01    
+    ##  5 raw         control   RM       0.0291         0.302       0.956   
+    ##  6 raw         control   PE       0.0373         0.793       2.09    
+    ##  7 raw         control   PP      -0.0108        -0.143      -0.424   
+    ##  8 raw         control   PM       0.00637        0.166       0.418   
+    ##  9 raw         control   PH       0.00250        0.0778      0.187   
+    ## 10 raw         control   RF      -0.0440        -0.505      -1.56    
+    ## 11 scaled      control   DM       0.00155        0.00222     0.00208 
+    ## 12 scaled      control   DO       0.00824        0.00981     0.00944 
+    ## 13 scaled      control   DS      -0.0225        -0.0227     -0.0227  
+    ## 14 scaled      control   PF      -0.0205        -0.0206     -0.0206  
+    ## 15 scaled      control   RM       0.00907        0.00904     0.00906 
+    ## 16 scaled      control   PE       0.0146         0.0143      0.0144  
+    ## 17 scaled      control   PP      -0.00598       -0.00511    -0.00532 
+    ## 18 scaled      control   PM       0.000560       0.00111     0.000974
+    ## 19 scaled      control   PH       0.00994        0.00991     0.00992 
+    ## 20 scaled      control   RF      -0.0511        -0.0437     -0.0456
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](decade_vis_files/figure-gfm/population%20slopes-1.png)<!-- -->
+
+<!-- ```{r adf tests sv} -->
+
+<!-- tseries::adf.test(sv$sv_abund, alternative = "s") -->
+
+<!-- tseries::adf.test(sv$sv_energy, alternative = "s") -->
+
+<!-- tseries::adf.test(sv$sv_biomass, alternative = "s") -->
+
+<!-- tseries::adf.test(sv$sv_meane, alternative = "s") -->
+
+<!-- tseries::adf.test(sv$sv_meanm, alternative = "s") -->
+
+<!-- ``` -->
