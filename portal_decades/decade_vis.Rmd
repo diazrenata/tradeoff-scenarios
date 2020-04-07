@@ -1,0 +1,96 @@
+---
+title: "Exploratory plots"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(dplyr)
+library(ggplot2)
+```
+
+```{r load a decade}
+
+this_decade = 1980
+
+dat <- read.csv(here::here("portal_decades", "data", paste0(this_decade, ".csv")), stringsAsFactors = F)
+
+dat <- dat %>%
+  group_by(treatment, period, species) %>%
+  summarize(ind_abund = dplyr::n(),
+            total_biomass = sum(wgt),
+            total_energy = sum(energy)) %>%
+  ungroup() %>%
+  group_by(treatment, period) %>%
+  mutate(sv_abund = sum(ind_abund),
+         sv_biomass = sum(total_biomass),
+         sv_energy = sum(total_energy)) %>%
+  ungroup()
+
+dat <- filter(dat, treatment == "control")
+
+```
+
+```{r aggregate and species plots}
+
+ggplot(dat, aes(x = period, y = sv_abund)) +
+  geom_line() +
+  geom_smooth(method = "lm", se = F) +
+  geom_line(aes(x = period, y = ind_abund, color = species)) +
+  theme_bw() +
+  scale_color_viridis_d() +
+  ggtitle("Abundance (N)")
+
+
+ggplot(dat, aes(x = period, y = sv_energy)) +
+  geom_line() +
+  geom_smooth(method = "lm", se = F) +
+  geom_line(aes(x = period, y = total_energy, color = species)) +
+  theme_bw() +
+  scale_color_viridis_d() +
+  ggtitle("Energy (E)")
+
+
+ggplot(dat, aes(x = period, y = sv_biomass)) +
+  geom_line() +
+  geom_smooth(method = "lm", se = F) +
+  geom_line(aes(x = period, y = total_biomass, color = species)) +
+  theme_bw() +
+  scale_color_viridis_d() +
+  ggtitle("Biomass (M)")
+```
+
+```{r facet svs}
+
+sv_long <- dat %>%
+  select(sv_abund, sv_energy, sv_biomass, period) %>%
+  distinct() %>%
+  tidyr::pivot_longer(cols = c("sv_energy", 'sv_biomass', "sv_abund"), names_to = "var", values_to = "val")
+
+ggplot(sv_long, aes(x = period, y = val)) +
+  geom_line() +
+  geom_smooth(method = "lm", se = F) +
+  theme_bw() +
+  facet_wrap(vars(var), scales = "free_y", nrow = 1)
+
+```
+
+
+```{r adf tests sv}
+
+tseries::adf.test(dat$sv_abund, alternative = "s")
+tseries::adf.test(dat$sv_energy, alternative = "s")
+tseries::adf.test(dat$sv_biomass, alternative = "s")
+
+tseries::kpss.test(dat$sv_abund, null = c("L"))
+tseries::kpss.test(dat$sv_energy, null = c("L"))
+tseries::kpss.test(dat$sv_biomass, null = c("L"))
+
+
+tseries::kpss.test(dat$sv_abund, null = c("T"))
+tseries::kpss.test(dat$sv_energy, null = c("T"))
+tseries::kpss.test(dat$sv_biomass, null = c("T"))
+
+
+
+```
