@@ -1,6 +1,8 @@
 ---
 title: "Exploratory plots"
 output: github_document
+params:
+  decade: [1990]
 ---
 
 ```{r setup, include=FALSE}
@@ -11,11 +13,11 @@ library(ggplot2)
 
 ```{r load a decade}
 
-this_decade = 1980
+this_decade = params$decade
 
-dat <- read.csv(here::here("portal_decades", "data", paste0(this_decade, ".csv")), stringsAsFactors = F)
+ind_dat <- read.csv(here::here("portal_decades", "data", paste0(this_decade, ".csv")), stringsAsFactors = F)
 
-dat <- dat %>%
+dat <- ind_dat %>%
   group_by(treatment, period, species) %>%
   summarize(ind_abund = dplyr::n(),
             total_biomass = sum(wgt),
@@ -125,9 +127,20 @@ Aggregate slopes:
 sv_slopes <- bind_rows(raw = sv %>%
   summarize_at(vars(-period), function(x, period_vector) {return(lm(x ~ period_vector)$coefficients["period_vector"])}, period_vector = sv$period),
   scaled = sv_d %>%
-  summarize_at(vars(-period), function(x, period_vector) {return(lm(x ~ period_vector)$coefficients["period_vector"])}, period_vector = sv_d$period), .id = "transformed")
+  summarize_at(vars(-period), function(x, period_vector) {return(lm(x ~ period_vector)$coefficients["period_vector"])}, period_vector = sv_d$period), .id = "transformed") %>%
+  mutate(var = "slope")
 
-sv_slopes
+sv_pval <- bind_rows(raw = sv %>%
+  summarize_at(vars(-period), function(x, period_vector) {return(summary(lm(x ~ period_vector))$coefficients[2,4])}, period_vector = sv$period),
+  scaled = sv_d %>%
+  summarize_at(vars(-period), function(x, period_vector) {return(summary(lm(x ~ period_vector))$coefficients[2,4])}, period_vector = sv_d$period), .id = "transformed") %>%
+  mutate(var = "pval")
+
+sv_lms <- bind_rows(sv_slopes, sv_pval) %>%
+  tidyr::pivot_longer(cols = c("sv_energy", 'sv_biomass', "sv_abund", "sv_meane", "sv_meanm"), names_to = "variable", values_to = "result") %>%
+  tidyr::pivot_wider(id_cols = c("transformed", "variable"), names_from = var, values_from = result) %>%
+  mutate(variable = substr(variable, 4, nchar(variable)))
+  
 ```
 
 Population slopes:
@@ -145,38 +158,92 @@ scaled_pops <- pops %>%
   ungroup()
 
 
-pop_slopes <- bind_rows(raw = get_populations_slopes(pops),
-                        scaled = get_populations_slopes(scaled_pops),
-                        .id= "transformed")
+pop_lms <- bind_rows(raw = get_populations_lms(pops),
+                        scaled = get_populations_lms(scaled_pops),
+                        .id= "transformed") %>%
+  rename(abund = ind_abund, biomass = total_biomass, energy = total_energy) %>%
+  tidyr::pivot_longer(cols = c("abund", "biomass", "energy"), names_to = "variable", values_to = "result") %>%
+  tidyr::pivot_wider(id_cols = c("transformed", "variable", "species"), names_from = var, values_from = result)
 
-print(pop_slopes)
+lms_long <- bind_rows(
+  mutate(pop_lms, sv = FALSE),
+  mutate(sv_lms, species = NA, sv = TRUE)
+)
 
-slopes_long <- pop_slopes %>%
-  tidyr::pivot_longer(cols = c("ind_abund", "total_biomass", "total_energy"), names_to = "variable", values_to = "slope")
-
-sv_slope_lines <- sv_slopes %>%
-  select(transformed, sv_abund, sv_energy, sv_biomass) %>%
-  rename(ind_abund = sv_abund, total_energy = sv_energy, total_biomass = sv_biomass) %>%
-  tidyr::pivot_longer(cols = c("ind_abund", "total_biomass", "total_energy"), names_to = "variable", values_to = "sv_slope")
-slopes_long <- left_join(slopes_long, sv_slope_lines,  by = c("transformed", "variable"))
-
-
-ggplot(slopes_long, aes(x = slope)) +
-  geom_histogram() +
-  geom_histogram(aes(x = sv_slope), fill = "blue", alpha = .4) +
+ggplot(filter(lms_long, substr(variable, 0, 4) != "mean"), aes(x = 0, y = slope, color = pval <= .05)) +
+  geom_jitter(data = filter(lms_long, !sv)) +
+  geom_point(data = filter(lms_long, sv, substr(variable, 0, 4) != "mean"), size = 4, shape = 7) +
   theme_bw() +
-  facet_wrap(vars(transformed, variable), scales = "free_x", nrow = 2) +
-  geom_vline(xintercept = 0)
+  facet_wrap(vars(transformed, variable), scales = "free_y") +
+  scale_color_viridis_d(begin = .2, end = .8, direction = -1) +
+  geom_hline(yintercept = 0)
 
 ```
 
-<!-- ```{r adf tests sv} -->
+```{r sv pre and post}
 
-<!-- tseries::adf.test(sv$sv_abund, alternative = "s") -->
-<!-- tseries::adf.test(sv$sv_energy, alternative = "s") -->
-<!-- tseries::adf.test(sv$sv_biomass, alternative = "s") -->
+dat_begin <- filter(dat, period %in% unique(dat$period)[1:12]) %>%
+  mutate(chunk = "begin")
+dat_end <- filter(dat, period %in% unique(dat$period)[(length(unique(dat$period)) - 11):length(unique(dat$period))]) %>%
+  mutate(chunk = "end")
 
-<!-- tseries::adf.test(sv$sv_meane, alternative = "s") -->
-<!-- tseries::adf.test(sv$sv_meanm, alternative = "s") -->
+dat_compare <- bind_rows(dat_begin, dat_end) %>%
+  group_by(chunk) %>%
+  mutate(chunk_n = sum(ind_abund),
+         chunk_m = sum(total_biomass),
+         chunk_e = sum(total_energy)) %>%
+  ungroup()
 
-<!-- ``` -->
+chunk_change <- dat_compare %>%
+  select(chunk, chunk_n, chunk_m, chunk_e) %>%
+  distinct() %>%
+  arrange(desc(chunk)) %>%
+  summarize_at(vars(starts_with("chunk_")), .funs = function(two_things) { return(two_things[1] / two_things[2])})
+
+print("Final year sv / first year sv")
+chunk_change
+```
+
+All are declining. E and M are declining faster than N, with M declining fastest of all. 
+
+This lands as "overall losses, disproportionately affecting larger species resulting in a smallward shift in the size spectrum". 
+Let's plot the size spectra.
+
+```{r size spectra}
+
+ss_start <- filter(ind_dat, period %in% unique(dat$period)[1:12]) %>%
+  mutate(chunk = "begin")
+ss_end <- filter(ind_dat, period %in% unique(dat$period)[(length(unique(dat$period)) - 11):length(unique(dat$period))]) %>%
+  mutate(chunk = "end")
+
+ss_compare <- bind_rows(ss_start, ss_end) %>%
+  select(species, wgt, energy, chunk)
+
+ggplot(ss_compare, aes(x = wgt, color = chunk, fill = chunk)) +
+  geom_histogram() +
+ facet_wrap(vars(chunk), scales = "free_y", as.table = T) +
+  theme_bw()
+
+species_compare <- ss_compare %>%
+  group_by(species) %>%
+  mutate(meanwgt = mean(wgt)) %>%
+  ungroup() %>%
+  arrange(meanwgt) %>%
+  mutate(species = as.character(species))
+
+species_compare <- species_compare %>%
+  mutate(species = factor(species, levels = unique(species_compare$species))) %>%
+  group_by(chunk) %>%
+  mutate(chunk_n = n()) %>%
+  ungroup() %>%
+  group_by(species, chunk) %>%
+  mutate(chunk_s_n = n()) %>%
+  ungroup() %>%
+  mutate(chunk_rel_abund = chunk_s_n / chunk_n)
+
+ggplot(species_compare, aes(x = species, y = chunk_rel_abund, color = chunk)) +
+  geom_point() +
+  theme_bw()
+
+```
+

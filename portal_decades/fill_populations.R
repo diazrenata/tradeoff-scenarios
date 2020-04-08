@@ -27,14 +27,15 @@ fill_population <- function(species_df, period_range) {
     
     inner_periods <- setdiff(c(min(species_df$period):max(species_df$period)), unique(species_df$period))
     
-    species_df <- bind_rows(species_df,
+    if(length(inner_periods) > 0) {
+      species_df <- bind_rows(species_df,
                             data.frame(
                               period = inner_periods,
                               species = species_df$species[1],
                               treatment = species_df$treatment[1],
                               stringsAsFactors = F
                             ))
-    
+    }
     species_df <- species_df %>%
       mutate_at(vars(-treatment, -period, -species), .funs = function(val) {return(ifelse(is.na(val), 0, val))}) %>%
       mutate_at(vars(-treatment, -period, -species), .funs = function(val) {return(ifelse(is.nan(val), 0, val))}) 
